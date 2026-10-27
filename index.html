@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Add backgrounds, spacing, rounded corners, and window frames to screenshots. Export PNG files directly in your browser.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>ShotFrame — Screenshot editor</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./src/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#controls">Skip to frame controls</a>
+  <header class="header">
+    <a class="brand" href="./"><img src="./icon.svg" width="28" height="28" alt="">ShotFrame <span>0.1.0</span></a>
+    <nav aria-label="Project"><a href="https://github.com/Almeida96/shotframe#readme">Guide</a><a href="https://github.com/Almeida96/shotframe">GitHub <span aria-hidden="true">↗</span></a></nav>
+  </header>
+  <main>
+    <div class="intro"><div><p class="eyebrow">SCREENSHOT EDITOR</p><h1>Frame a screenshot.</h1><p>A background, a little space, and a PNG ready to share.</p></div><div class="intro-actions"><button id="sample" class="quiet" type="button">Use sample</button><button id="upload" class="primary" type="button"><span aria-hidden="true">＋</span> Open image</button></div></div>
+    <input id="file" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+    <div class="workspace">
+      <section class="preview-panel" aria-label="Image preview">
+        <div class="preview-heading"><span><span class="dot" aria-hidden="true"></span> Preview</span><span id="source-size"></span></div>
+        <div id="drop-zone" class="stage"><canvas id="preview" role="img" aria-label="Framed screenshot preview"></canvas><div class="drop-message" aria-hidden="true">Drop an image here</div></div>
+        <div class="source-row"><div><strong id="source-name">Sample screenshot</strong><span id="source-note">PNG, JPEG, or WebP · Up to 25 MB</span></div><span class="paste-hint">Drop an image or paste with <kbd id="paste-key">Ctrl</kbd> + <kbd>V</kbd></span></div>
+        <div class="export-row"><div><span class="label">OUTPUT</span><strong id="output-size"></strong><span id="output-note">PNG · Includes the current frame settings</span></div><div class="export-actions"><button id="copy" type="button">Copy PNG</button><button id="download" class="primary" type="button">Download PNG <span aria-hidden="true">↓</span></button></div></div>
+        <p id="status" class="status" role="status" aria-live="polite">Sample loaded. Open an image to frame your own screenshot.</p>
+        <p id="error" class="error" role="alert" hidden></p>
+      </section>
+      <aside class="settings-panel">
+        <div class="settings-heading"><h2>Frame settings</h2><button id="reset" class="text-button" type="button">Reset</button></div>
+        <fieldset id="controls" tabindex="-1"><legend class="sr-only">Frame settings</legend>
+          <section class="setting-section"><h3>Background</h3><div id="presets" class="presets" role="group" aria-label="Background presets"></div>
+            <label for="background">Fill</label><select id="background"><option value="gradient">Gradient</option><option value="solid">Solid color</option><option value="transparent">Transparent</option></select>
+            <div id="color-fields" class="color-fields"><label>First color<input id="color1" type="color" value="#e8d6c6"></label><label id="second-color">Second color<input id="color2" type="color" value="#c78869"></label></div>
+            <div id="angle-field"><div class="range-label"><label for="angle">Direction</label><output id="angle-value" for="angle">135°</output></div><input id="angle" type="range" min="0" max="360" step="15" value="135"></div>
+          </section>
+          <section class="setting-section"><h3>Layout</h3>
+            <label for="ratio">Canvas shape</label><select id="ratio"><option value="auto">Fit screenshot</option><option value="square">Square · 1:1</option><option value="wide">Landscape · 16:9</option><option value="portrait">Portrait · 4:5</option></select>
+            <div class="range-label"><label for="padding">Padding</label><output id="padding-value" for="padding">64 px</output></div><input id="padding" type="range" min="0" max="160" step="4" value="64">
+            <div class="range-label"><label for="radius">Corner radius</label><output id="radius-value" for="radius">12 px</output></div><input id="radius" type="range" min="0" max="48" step="2" value="12">
+            <div class="range-label"><label for="shadow">Shadow</label><output id="shadow-value" for="shadow">24 px</output></div><input id="shadow" type="range" min="0" max="64" step="4" value="24">
+          </section>
+          <section class="setting-section"><h3>Window frame</h3><label class="sr-only" for="chrome">Window frame style</label><select id="chrome"><option value="none">None</option><option value="light">Light</option><option value="dark">Dark</option></select><div id="title-field" hidden><label for="title">Window title</label><input id="title" type="text" maxlength="80" placeholder="Optional title" autocomplete="off" spellcheck="false"></div></section>
+          <section class="setting-section scale-section"><label for="scale">Export scale</label><select id="scale"><option value="0.5">0.5× · Half size</option><option value="1" selected>1× · Original size</option><option value="2">2× · Double size</option></select><p>Scale changes the output size. It does not add detail to the source image.</p></section>
+        </fieldset>
+      </aside>
+    </div>
+    <footer><span>Images stay in your browser.</span><span>No uploads. No account. No watermark.</span><a href="https://github.com/Almeida96/shotframe/blob/main/LICENSE">MIT license</a></footer>
+  </main>
+  <noscript><p class="error">Enable JavaScript to use the screenshot editor.</p></noscript>
+</body>
+</html>
