@@ -6,6 +6,14 @@ Add a background, padding, rounded corners, and an optional window frame to a sc
 
 ![ShotFrame editor](docs/editor.jpg)
 
+## Hide details before sharing
+
+Enable **Drag on the screenshot to hide an area**, then cover names, tokens, addresses, or other details with a solid black rectangle. The coordinate fields provide the same operation by keyboard, in original source pixels. You can undo or redo the last 30 area changes, clear all areas, and add up to 100 rectangles.
+
+Areas stay attached to the screenshot when padding, shape, window chrome or export scale changes. Loading another image clears them. Resetting frame settings keeps them. Both **Copy PNG** and **Download PNG** paint the masks into the output pixels; the exported file has no editable redaction layer. Inspect the downloaded image and cover the full content, including text edges, before sharing it.
+
+The source file is unchanged. Hidden areas and history live only in the current browser session. There is no text recognition or automatic sensitive-data detection.
+
 ## Use
 
 1. Open a PNG, JPEG, or WebP file. You can also drop an image onto the page or paste one with Ctrl+V / Cmd+V.
