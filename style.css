@@ -86,3 +86,13 @@ footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12
 @media (max-width: 1100px) { .paste-hint { display: none; } .stage { padding: 25px; } .export-row { align-items: flex-start; flex-direction: column; } .export-actions { width: 100%; } .export-actions button { flex: 1; } }
 @media (max-width: 800px) { .workspace { grid-template-columns: 1fr; } .stage { height: 390px; padding: 24px; } #controls { display: grid; grid-template-columns: 1fr 1fr; } .setting-section:nth-of-type(odd) { border-right: 1px solid var(--line); } .scale-section { border-bottom: 1px solid var(--line); } .export-row { flex-direction: row; align-items: center; } .export-actions { width: auto; } .export-actions button { flex: initial; } }
 @media (max-width: 540px) { .header { height: 64px; padding: 0 18px; } .brand span { display: none; } nav { gap: 18px; font-size: 12px; } main { padding: 28px 16px 0; } .intro { display: block; margin-bottom: 22px; } .intro-actions { margin-top: 20px; justify-content: flex-start; flex-direction: row-reverse; } .stage { height: 320px; padding: 16px; } .preview-heading { padding: 0 15px; } .source-row { padding: 15px; } #source-name { max-width: 265px; } .export-row { flex-direction: column; align-items: flex-start; padding: 18px 15px; } .export-actions { width: 100%; } .export-actions button { flex: 1; padding: 10px; } .status { padding-left: 15px; } #controls { display: block; } .setting-section:nth-of-type(odd) { border-right: 0; } .presets { gap: 10px; } .swatch { height: 37px; } .preset { font-size: 10px; } footer { justify-content: flex-start; line-height: 1.6; } }
+/* Redaction controls sit next to the preview so source coordinates stay visible. */
+.redaction-controls { border: 0; border-top: 1px solid #ded8d0; margin: 0; padding: 18px 24px; min-width: 0; }
+.redaction-controls legend { font-weight: 650; padding: 0 5px; }
+.mask-toggle { display: flex; gap: 8px; align-items: center; }
+.mask-toggle input { width: auto; margin: 0; }
+.mask-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+.mask-coordinates { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+.mask-coordinates input { width: 100%; min-width: 0; }
+.redaction-controls p, #mask-count { font-size: 12px; line-height: 1.6; color: #625b54; }
+#preview.mask-mode { cursor: crosshair; touch-action: none; }

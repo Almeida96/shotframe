@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0 — 2026-10-28
+
+Hide screenshot areas with solid rectangles, coordinate input, undo and redo; flatten masks into PNG exports.
+
 ## 0.1.0 — 2026-10-27
 
 - Open, drop, or paste PNG, JPEG, and WebP images.

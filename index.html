@@ -13,7 +13,7 @@
 <body>
   <a class="skip" href="#controls">Skip to frame controls</a>
   <header class="header">
-    <a class="brand" href="./"><img src="./icon.svg" width="28" height="28" alt="">ShotFrame <span>0.1.0</span></a>
+    <a class="brand" href="./"><img src="./icon.svg" width="28" height="28" alt="">ShotFrame <span>0.2.0</span></a>
     <nav aria-label="Project"><a href="https://github.com/Almeida96/shotframe#readme">Guide</a><a href="https://github.com/Almeida96/shotframe">GitHub <span aria-hidden="true">↗</span></a></nav>
   </header>
   <main>
@@ -24,6 +24,7 @@
         <div class="preview-heading"><span><span class="dot" aria-hidden="true"></span> Preview</span><span id="source-size"></span></div>
         <div id="drop-zone" class="stage"><canvas id="preview" role="img" aria-label="Framed screenshot preview"></canvas><div class="drop-message" aria-hidden="true">Drop an image here</div></div>
         <div class="source-row"><div><strong id="source-name">Sample screenshot</strong><span id="source-note">PNG, JPEG, or WebP · Up to 25 MB</span></div><span class="paste-hint">Drop an image or paste with <kbd id="paste-key">Ctrl</kbd> + <kbd>V</kbd></span></div>
+        <fieldset id="redaction-controls" class="redaction-controls"><legend>Hide sensitive details</legend><label class="mask-toggle"><input id="mask-mode" type="checkbox"> Drag on the screenshot to hide an area</label><span id="mask-count"></span><div class="mask-actions"><button id="mask-undo" type="button">Undo area</button><button id="mask-redo" type="button">Redo area</button><button id="mask-clear" type="button">Clear areas</button></div><details><summary>Enter an area in source pixels</summary><div class="mask-coordinates"><label>X<input id="mask-x" type="number" min="0" value="0"></label><label>Y<input id="mask-y" type="number" min="0" value="0"></label><label>Width<input id="mask-width" type="number" min="1" value="160"></label><label>Height<input id="mask-height" type="number" min="1" value="40"></label></div><button id="mask-add" type="button">Hide this area</button></details><p>Solid black areas are painted into the PNG. Cover the full text, including its edges, and inspect the download before sharing.</p></fieldset>
         <div class="export-row"><div><span class="label">OUTPUT</span><strong id="output-size"></strong><span id="output-note">PNG · Includes the current frame settings</span></div><div class="export-actions"><button id="copy" type="button">Copy PNG</button><button id="download" class="primary" type="button">Download PNG <span aria-hidden="true">↓</span></button></div></div>
         <p id="status" class="status" role="status" aria-live="polite">Sample loaded. Open an image to frame your own screenshot.</p>
         <p id="error" class="error" role="alert" hidden></p>

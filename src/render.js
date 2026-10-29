@@ -1,4 +1,5 @@
 import { normalizeOptions, calculateLayout, gradientLine, checkExportSize } from './core.js';
+import { paintRedactions } from './redactions.js';
 
 function rounded(ctx, x, y, width, height, radius) {
   ctx.beginPath(); ctx.roundRect(x, y, width, height, radius);
@@ -12,7 +13,7 @@ function fitTitle(ctx, title, maxWidth) {
   return clipped ? clipped + '…' : '';
 }
 
-export function renderFrame(canvas, source, input, { preview = false } = {}) {
+export function renderFrame(canvas, source, input, { preview = false, redactions = [] } = {}) {
   const options = normalizeOptions(input);
   const layout = calculateLayout(source.width, source.height, options);
   if (!preview) checkExportSize(layout);
@@ -55,6 +56,7 @@ export function renderFrame(canvas, source, input, { preview = false } = {}) {
   }
   ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(source, layout.image.x, layout.image.y, layout.image.width, layout.image.height);
+  paintRedactions(ctx, redactions, layout.image, canvas.width / layout.width, canvas.height / layout.height);
   ctx.restore();
   return layout;
 }

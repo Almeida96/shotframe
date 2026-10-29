@@ -1,12 +1,14 @@
 {
   "name": "shotframe",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Frame screenshots in your browser and export them as PNG.",
   "type": "module",
   "license": "MIT",
   "author": "Igor Almeida",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "check": "node scripts/check.mjs",
     "test": "node --test test/*.test.js",

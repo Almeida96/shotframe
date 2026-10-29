@@ -1,12 +1,14 @@
 import { DEFAULTS, PRESETS, MAX_FILE_BYTES, validateSource, detectImageType, checkExportSize, exportName } from './core.js';
 import { renderFrame, toPNG } from './render.js';
 import { createSample } from './sample.js';
+import { normalizeRedaction, dragRectangle, sourcePoint } from './redactions.js';
 
 const $ = id => document.getElementById(id);
 const fields = Object.keys(DEFAULTS);
 const numbers = new Set(['angle', 'padding', 'radius', 'shadow', 'scale']);
 let source = createSample(), sourceName = 'sample.png', isSample = true, busy = false, requestId = 0, renderId = 0, layout;
 const canCopy = typeof ClipboardItem !== 'undefined' && Boolean(navigator.clipboard?.write);
+let redactions = [], undo = [], redo = [], drag = null, draft = null;
 const say = text => { $('status').textContent = text; };
 const showError = text => { $('error').textContent = text; $('error').hidden = !text; };
 
@@ -14,15 +16,20 @@ function options() { return Object.fromEntries(fields.map(key => [key, numbers.h
 function setOptions(values) { for (const [key, value] of Object.entries(values)) $(key).value = String(value); }
 function lock(value) {
   busy = value; $('controls').disabled = value;
+  $('redaction-controls').disabled = value;
   for (const key of ['upload', 'sample', 'reset']) $(key).disabled = value;
   updateButtons();
 }
 function updateButtons() {
-  let allowed = Boolean(layout);
+  let allowed = Boolean(layout) && !drag;
   try { if (layout) checkExportSize(layout); } catch { allowed = false; }
   $('download').disabled = busy || !allowed;
   $('copy').disabled = busy || !allowed || !canCopy;
   $('copy').title = canCopy ? 'Copy the framed image' : 'Image copying is unavailable in this browser. Use Download PNG.';
+  $('mask-undo').disabled = busy || !undo.length;
+  $('mask-redo').disabled = busy || !redo.length;
+  $('mask-clear').disabled = busy || !redactions.length;
+  $('mask-count').textContent = `${redactions.length} hidden ${redactions.length === 1 ? 'area' : 'areas'}`;
 }
 function refresh() {
   const settings = options();
@@ -37,7 +44,7 @@ function refresh() {
     button.setAttribute('aria-pressed', String(matches));
   }
   try {
-    layout = renderFrame($('preview'), source, settings, { preview: true });
+    layout = renderFrame($('preview'), source, settings, { preview: true, redactions: draft ? [...redactions, draft] : redactions });
     $('source-size').textContent = `${source.width.toLocaleString('en-US')} × ${source.height.toLocaleString('en-US')} px`;
     $('source-name').textContent = isSample ? 'Sample screenshot' : sourceName;
     $('output-size').textContent = `${layout.outputWidth.toLocaleString('en-US')} × ${layout.outputHeight.toLocaleString('en-US')} px`;
@@ -74,6 +81,7 @@ async function loadFile(file) {
     validateSource(bitmap.width, bitmap.height);
     if (id !== requestId || busy) { bitmap.close(); return; }
     source.close?.(); source = bitmap; bitmap = null; sourceName = file.name || 'pasted-image.png'; isSample = false;
+    clearRedactions();
     refresh(); say('Image opened. Adjust the frame or download the PNG.');
   } catch (error) {
     bitmap?.close();
@@ -81,7 +89,7 @@ async function loadFile(file) {
     showError(error instanceof DOMException ? 'This image could not be decoded. Try another PNG, JPEG, or WebP file.' : error.message); say('The previous image has been kept.');
   }
 }
-$('sample').addEventListener('click', () => { requestId++; source.close?.(); source = createSample(); sourceName = 'sample.png'; isSample = true; refresh(); say('Sample screenshot loaded.'); });
+$('sample').addEventListener('click', () => { requestId++; source.close?.(); source = createSample(); sourceName = 'sample.png'; isSample = true; clearRedactions(); refresh(); say('Sample screenshot loaded.'); });
 
 let dragDepth = 0;
 document.addEventListener('dragenter', event => { if ([...event.dataTransfer.types].includes('Files')) { event.preventDefault(); dragDepth++; $('drop-zone').classList.add('dragging'); } });
@@ -100,7 +108,7 @@ if (/Mac|iPhone|iPad/.test(navigator.platform)) $('paste-key').textContent = '�
 
 async function buildPNG() {
   const canvas = document.createElement('canvas');
-  try { renderFrame(canvas, source, options()); return await toPNG(canvas); }
+  try { renderFrame(canvas, source, options(), { redactions }); return await toPNG(canvas); }
   finally { canvas.width = 1; canvas.height = 1; }
 }
 async function exportImage(action) {
@@ -123,4 +131,45 @@ async function exportImage(action) {
 }
 $('download').addEventListener('click', () => exportImage('download'));
 $('copy').addEventListener('click', () => exportImage('copy'));
+
+function clearRedactions() { redactions = []; undo = []; redo = []; drag = null; draft = null; }
+function commitMasks(next) {
+  if (next.length > 100) throw new Error('Use at most 100 hidden areas per screenshot.');
+  undo.push(redactions); if (undo.length > 30) undo.shift();
+  redactions = next; redo = []; draft = null; refresh(); say('Hidden areas updated. They are included in the exported PNG.');
+}
+$('mask-mode').addEventListener('change', () => {
+  $('preview').classList.toggle('mask-mode', $('mask-mode').checked);
+  say($('mask-mode').checked ? 'Drag over the screenshot to cover an area. You can also enter pixel coordinates.' : 'Drag to hide is off. Existing areas are still hidden.');
+});
+function point(event, clamp = false) {
+  const bounds = $('preview').getBoundingClientRect();
+  return sourcePoint((event.clientX - bounds.left) / bounds.width * layout.width, (event.clientY - bounds.top) / bounds.height * layout.height, layout.image, clamp);
+}
+$('preview').addEventListener('pointerdown', event => {
+  if (busy || !$('mask-mode').checked || event.button !== 0 || redactions.length >= 100) return;
+  const start = point(event); if (!start) return;
+  event.preventDefault(); drag = { start, pointer: event.pointerId }; $('preview').setPointerCapture(event.pointerId);
+  updateButtons();
+});
+$('preview').addEventListener('pointermove', event => {
+  if (!drag || drag.pointer !== event.pointerId) return;
+  draft = dragRectangle(drag.start, point(event, true), source.width, source.height); scheduleRender();
+});
+$('preview').addEventListener('pointerup', event => {
+  if (!drag || drag.pointer !== event.pointerId) return;
+  const rect = dragRectangle(drag.start, point(event, true), source.width, source.height);
+  drag = null; draft = null; $('preview').releasePointerCapture(event.pointerId);
+  if (rect) commitMasks([...redactions, rect]); else refresh();
+});
+$('preview').addEventListener('pointercancel', () => { drag = null; draft = null; refresh(); });
+$('mask-add').addEventListener('click', () => {
+  try {
+    const rect = normalizeRedaction(Object.fromEntries(['x', 'y', 'width', 'height'].map(key => [key, Number($(`mask-${key}`).value)])), source.width, source.height);
+    commitMasks([...redactions, rect]);
+  } catch (error) { showError(error.message); }
+});
+$('mask-undo').addEventListener('click', () => { if (undo.length) { redo.push(redactions); redactions = undo.pop(); refresh(); say('Previous hidden areas restored.'); } });
+$('mask-redo').addEventListener('click', () => { if (redo.length) { undo.push(redactions); redactions = redo.pop(); refresh(); say('Hidden areas reapplied.'); } });
+$('mask-clear').addEventListener('click', () => commitMasks([]));
 setOptions(DEFAULTS); refresh();
