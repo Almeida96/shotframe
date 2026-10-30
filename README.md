@@ -1,5 +1,7 @@
 # ShotFrame
 
+[![CI](https://github.com/Almeida96/shotframe/actions/workflows/ci.yml/badge.svg)](https://github.com/Almeida96/shotframe/actions/workflows/ci.yml)
+
 Add a background, padding, rounded corners, and an optional window frame to a screenshot. Export the result as a PNG.
 
 [Open the editor](https://almeida96.github.io/shotframe/)
@@ -76,6 +78,7 @@ node scripts/build.mjs
 - `src/core.js`: layout, option validation, gradient geometry, file signatures, and output limits.
 - `src/render.js`: shared Canvas 2D rendering for preview and export.
 - `src/app.js`: file loading, controls, clipboard, and download handling.
+- `src/redactions.js`: source-coordinate masks, outward rounding and opaque export rectangles.
 - `src/sample.js`: the built-in sample screenshot.
 
 The tests cover layout dimensions, ratios, scaling, bounds, file signatures, and filenames. See [the browser checklist](docs/testing.md) for import and export checks. GitHub Actions runs the checks on Linux, Windows, and macOS, then deploys the static build to GitHub Pages.
@@ -88,4 +91,4 @@ The [release ZIP](https://github.com/Almeida96/shotframe/releases/latest) contai
 
 ## License
 
-[MIT](LICENSE).
+[Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md) · [MIT](LICENSE).

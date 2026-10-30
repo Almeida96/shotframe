@@ -12,5 +12,7 @@ Start with `node scripts/build.mjs` and `node scripts/serve.mjs`. Open `http://1
 8. Change frame settings, then use Reset. The source image should stay in place. Use sample should replace the source while keeping the settings.
 9. Check the layout at 390 and 1280 pixels wide. The page should not scroll horizontally, and all controls should remain reachable by keyboard.
 10. Reload the page. It should return to the sample and default settings.
+11. Cover a known colored region with a redaction rectangle, including a reverse-direction drag. Export at 0.5× and 2× and inspect the downloaded pixels: the entire selected region must be opaque black, including its boundary pixels.
+12. Undo and redo the redaction, then add one using the coordinate fields with the keyboard. Check that the preview and export contain the same areas. Loading another image must clear the previous image's redactions.
 
 For export comparisons, inspect the downloaded file, not just the on-screen preview. The preview is scaled down for display.
